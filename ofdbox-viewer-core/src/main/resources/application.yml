@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+font-dir: font/
+store-path: target/
+#任务清理时间（天）
+task-clear-time: 72
+spring:
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 30MB
+      max-request-size: 30MB
