@@ -6,5 +6,3 @@
 
 ![](./docs/uploader.png)
 ![](./docs/viewer.png)
-
-# 重构的时候好像把UI部分搞掉了，20号后提交
