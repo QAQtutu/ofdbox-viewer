@@ -2,11 +2,9 @@ package com.ofdbox.viewer.web;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ofdbox.viewer.task.Task;
 import com.ofdbox.viewer.task.TaskContext;
 import com.ofdbox.viewer.task.TaskManage;
-import com.ofdbox.viewer.utils.Wapper;
-import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.List;
 
 @RestController
 public class ImageController {

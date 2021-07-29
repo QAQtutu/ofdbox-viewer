@@ -37,12 +37,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <artifactId>converter</artifactId>
-            <groupId>com.ofdbox</groupId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -66,6 +60,17 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.74</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ofdrw</groupId>
+            <artifactId>ofdrw-converter</artifactId>
+            <version>1.13.5</version>
         </dependency>
 
 

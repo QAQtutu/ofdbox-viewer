@@ -1,6 +1,6 @@
 package com.ofdbox.viewer;
 
-import com.ofdbox.convertor.utils.FontUtils;
+import org.ofdrw.converter.FontLoader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -27,8 +27,8 @@ public class OfdboxExampleApplication implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         File dir = new File(fontDir);
-        FontUtils.scanFontDir(dir);
-        FontUtils.addAliasMapping("null", "仿宋简体", "null", "方正仿宋简体");
-        FontUtils.addAliasMapping("null", "小标宋体", "方正小标宋简体", "方正小标宋简体");
+        FontLoader.getInstance().scanFontDir(dir);
+        FontLoader.getInstance().addAliasMapping("null", "仿宋简体", "null", "方正仿宋简体");
+        FontLoader.getInstance().addAliasMapping("null", "小标宋体", "方正小标宋简体", "方正小标宋简体");
     }
 }

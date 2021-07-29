@@ -1,58 +1,55 @@
 package com.ofdbox.viewer.task;
 
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ofdbox.convertor.img.Ofd2Img;
-import com.ofdbox.core.*;
-import com.ofdbox.core.model.OFD;
-import com.ofdbox.core.model.page.Page;
 import lombok.Data;
+import org.ofdrw.converter.ImageMaker;
+import org.ofdrw.reader.OFDReader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Data
 public class Task {
     private TaskContext context;
     private File workdir;
 
-    private static OFDReader ofdReader = null;
-    private static Ofd2Img ofd2Img = null;
-
-
     public Task(TaskContext context, File workdir) {
         this.context = context;
         this.workdir = workdir;
-
-        ofdReader = new OFDReader();
-        ofdReader.getConfig().setValid(false);
-        ofd2Img = new Ofd2Img();
-        if (context.isDrawBoundary()) {
-            ofd2Img.getConfig().setDrawBoundary(context.isDrawBoundary());
-        }
     }
 
     public void run() {
         try {
             context.setState(State.PARSING);
             File file = new File(workdir, context.getFilename());
-            OFD ofd = ofdReader.read(file);
-            File imageDie = new File(workdir, "images");
-            imageDie.mkdirs();
-            context.setState(State.RENDERING);
-            int currentPage = 0;
-            for (Page page : ofd.getDocuments().get(0).getPages()) {
-                currentPage++;
-                File imageFile = new File(imageDie, currentPage + ".png");
-                BufferedImage image = ofd2Img.toImage(page, context.getDpi());
-                ImageIO.write(image, "PNG", imageFile);
-                context.setCurrentPage(currentPage);
-                context.getPages().add(currentPage);
+
+            Path src = Paths.get(file.getAbsolutePath());
+
+            try (OFDReader reader = new OFDReader(src);) {
+
+                ImageMaker imageMaker = new ImageMaker(reader, context.getDpi());
+
+                File imageDie = new File(workdir, "images");
+                imageDie.mkdirs();
+                context.setState(State.RENDERING);
+
+                for (int i = 0; i < imageMaker.pageSize(); i++) {
+                    // 4. 指定页码转换图片
+                    BufferedImage image = imageMaker.makePage(i);
+
+                    File imageFile = new File(imageDie, i + ".png");
+                    ImageIO.write(image, "PNG", imageFile);
+
+                    context.setCurrentPage(i);
+                    context.getPages().add(i);
+
+                    context.setState(State.COMPLETED);
+                }
+
             }
-            context.setState(State.COMPLETED);
         } catch (Exception e) {
 
             final Writer result = new StringWriter();
