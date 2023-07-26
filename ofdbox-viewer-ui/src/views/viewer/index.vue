@@ -1,15 +1,11 @@
 <template>
   <div class="ofdbox-viewer-body">
     <Header :task="task" />
-    <div
-      v-if="
+    <div v-if="
         task == null || (task.state !== 'COMPLETED' && task.state !== 'ERROR')
       "
-      class="state"
-    >
-      <span v-if="!notfound && !task"
-        ><i class="el-icon-loading"></i>正在获取文档信息...</span
-      >
+         class="state">
+      <span v-if="!notfound && !task"><i class="el-icon-loading"></i>正在获取文档信息...</span>
 
       <span v-if="task && task.state === 'WAITING'">
         <i class="el-icon-loading"></i>
@@ -21,18 +17,34 @@
       </span>
       <span v-if="task && task.state === 'RENDERING'">
         <i class="el-icon-loading"></i>
-        正在渲染第{{ task.currentPage }}页...
+        正在渲染第{{ task.completedPage + 1 }}页...
       </span>
     </div>
 
-    <div v-for="url in images" :key="url" class="page">
-      <el-image :key="url" :src="url" lazy></el-image>
+    <div v-for="url in images"
+         :key="url"
+         class="page">
+
+      <SvgViewer v-if="task.userOptions.imageType == 'SVG'"
+                 :url="url" />
+      <el-image v-else
+                :key="url"
+                :src="url"
+                :preview-src-list="[url]"
+                lazy></el-image>
+
+      <!-- <object :data="url"
+              type="image/svg+xml"
+              style="border: 1px solid steelblue" /> -->
     </div>
 
-    <div v-if="task && task.state === 'ERROR'" class="error-msg">
+    <div v-if="task && task.state === 'ERROR'"
+         class="error-msg">
       <div class="error-title">解析错误</div>
-      <div class="error-content" v-if="task.stackTrace">
-        <p v-for="(row, index) in task.stackTrace.split('\n')" :key="index">
+      <div class="error-content"
+           v-if="task.stackTrace">
+        <p v-for="(row, index) in task.stackTrace.split('\n')"
+           :key="index">
           {{ row }}
         </p>
       </div>
@@ -43,9 +55,10 @@
 <script>
 import axios from 'axios'
 import Header from './header'
+import SvgViewer from './SvgViewer'
 export default {
   components: {
-    Header
+    Header, SvgViewer
   },
   data () {
     return {
@@ -69,9 +82,14 @@ export default {
     images () {
       if (!this.task) return []
       let urls = []
-      this.task.pages.forEach(page => {
-        urls.push(this.baseUrl + "/image/" + this.id + "/" + page)
-      })
+
+      const type = this.task.userOptions.imageType;
+
+      for (let i = 1; i <= this.task.completedPage; i++) {
+        const url = `${this.baseUrl}/image/${this.id}/${i}.${type.toLowerCase()}`
+        urls.push(url)
+      }
+
       return urls
     }
   },
@@ -104,7 +122,7 @@ export default {
 .page {
   padding-left: 10%;
   padding-right: 10%;
-  margin-top: 10px;
+  margin-top: 30px;
 }
 .state {
   position: fixed;

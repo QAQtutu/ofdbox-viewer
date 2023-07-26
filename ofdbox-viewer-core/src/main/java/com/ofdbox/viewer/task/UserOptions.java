@@ -1,5 +1,7 @@
 package com.ofdbox.viewer.task;
 
+import com.ofdbox.viewer.task.constant.ImageType;
+import com.ofdbox.viewer.task.constant.Type;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
@@ -7,7 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UserInput {
+public class UserOptions {
     /**
      * 任务类型 文件/URL
      */
@@ -27,7 +29,7 @@ public class UserInput {
     /**
      * 每毫米像素值
      */
-    @Min(5)
+    @Min(3)
     @Max(15)
     private int ppm = 8;
 

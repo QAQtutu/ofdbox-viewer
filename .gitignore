@@ -61,3 +61,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+ofdbox-viewer-core/src/main/resources/static

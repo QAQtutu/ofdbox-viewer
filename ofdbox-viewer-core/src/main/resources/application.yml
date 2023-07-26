@@ -1,5 +1,8 @@
 server:
   port: 8081
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/plain,text/css,application/x-javascript
 
 font-dir: font/
 store-path: target/
@@ -15,3 +18,5 @@ spring:
       enabled: true
       max-file-size: 30MB
       max-request-size: 30MB
+
+

@@ -1,8 +1,6 @@
 package com.ofdbox.viewer.web;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.ofdbox.viewer.task.TaskContext;
+import com.ofdbox.viewer.task.Task;
 import com.ofdbox.viewer.task.TaskManage;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 @RestController
 public class ImageController {
@@ -26,22 +27,26 @@ public class ImageController {
     TaskManage taskManage;
 
     @GetMapping("/image/{id}/{page}")
-    public void getImage(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") String uid, @PathVariable("page") Integer page) {
-
-        File file = new File(getWorkdir(uid), "images/" + page + ".png");
-
-        if (!file.exists()) {
-            response.setStatus(404);
+    public void getImage(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") String uid, @PathVariable("page") String page) {
+        File file = null;
+        try {
+            file = new File(getWorkdir(uid), "images/" + page).getCanonicalFile();
+            if (!file.getCanonicalPath().startsWith(new File(storePath).getCanonicalPath()) || !file.exists()) {
+                response.setStatus(404);
+                return;
+            }
+            if (page.toLowerCase().endsWith(".svg")) {
+                response.setHeader("Content-Type", "application/xml");
+            }
+        } catch (IOException e) {
+            response.setStatus(500);
             return;
         }
 
-        response.setHeader("Content-Disposition", "attachment;Filename=" + page + ".png");
-        try {
-            OutputStream outputStream = response.getOutputStream();
-            FileInputStream inputStream = new FileInputStream(file);
+        response.setHeader("Content-Disposition", "attachment;Filename=" + page);
+        try (OutputStream outputStream = response.getOutputStream();
+             FileInputStream inputStream = new FileInputStream(file);) {
             IOUtils.copy(inputStream, outputStream);
-            inputStream.close();
-            outputStream.close();
             return;
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,36 +56,12 @@ public class ImageController {
     }
 
     @GetMapping("/task/{id}")
-    public ResponseEntity queryTask(@PathVariable("id") String uid) {
-        TaskContext context = taskManage.queryTask(uid);
-        if (context != null) {
-            return ResponseEntity.ok(context);
-        }
-
-        File workdir = getWorkdir(uid);
-        File allover = new File(workdir, "allover");
-        File jsonFile = new File(workdir, "context.json");
-        if (!allover.exists() || !jsonFile.exists())
+    public ResponseEntity<Task> queryTask(@PathVariable("id") String uid) {
+        Task task = taskManage.getTask(uid);
+        if (task == null) {
             return ResponseEntity.notFound().build();
-
-        String json = readString(jsonFile);
-        JSONObject object = JSON.parseObject(json);
-
-        return ResponseEntity.ok(object);
-    }
-
-    private String readString(File file) {
-        String res = "";
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file));
-            String str;
-            while ((str = in.readLine()) != null) {
-                res += str;
-            }
-            return res;
-        } catch (IOException e) {
-            return null;
         }
+        return ResponseEntity.ok(task);
     }
 
     public File getWorkdir(String uid) {

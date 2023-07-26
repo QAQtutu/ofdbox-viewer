@@ -44,6 +44,13 @@
             <version>1.2.74</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
@@ -70,7 +77,7 @@
         <dependency>
             <groupId>org.ofdrw</groupId>
             <artifactId>ofdrw-converter</artifactId>
-            <version>1.13.5</version>
+            <version>2.0.6</version>
         </dependency>
 
 
@@ -168,6 +175,7 @@
                                         <include>js/</include>
                                         <include>favicon.ico</include>
                                         <include>index.html</include>
+                                        <include>example.ofd/</include>
                                     </includes>
                                 </resource>
                             </resources>
